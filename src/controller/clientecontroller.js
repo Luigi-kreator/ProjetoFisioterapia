@@ -2,10 +2,10 @@ const db = require('../db/db'); //Módulo de conexão com o banco de dados
 const Joi = require('joi'); //Biblioteca de validação de dados
 
 const clienteSchema = Joi.object({
-    CPF: Joi.string().length(11).required(),
-    IDADE: Joi.string().required(),
+    cpf: Joi.string().length(11).required(),
+    idade: Joi.string().required(),
     telefone: Joi.string().required(),
-    NOME: Joi.string().required(),
+    nome: Joi.string().required(),
     email: Joi.string().required(),
     senha: Joi.string().min(6).required()
 });
@@ -49,12 +49,12 @@ exports.ListarClientesCPF = async (req, res) => {
 }
  
 exports.adicionarCliente = async (req, res) => {
-    const { CPF, IDADE, telefone, NOME, email, senha } = req.body;
-    const { error } = clienteSchema.validate ({ CPF, IDADE, telefone, NOME, email, senha});
+    const { cpf, idade, telefone, nome, email, senha } = req.body;
+    const { error } = clienteSchema.validate ({ cpf, idade, telefone, nome, email, senha});
     if (error) {
         return res.status(400).json({ error: error.details[0].message});
     }
-    const novoCliente = {CPF, IDADE, telefone, NOME, email, senha};
+    const novoCliente = {cpf, idade, telefone, nome, email, senha};
     try {
         await db.query('INSERT INTO cliente SET ?', novoCliente);
         res.json({ message: 'Cliente adicionado com sucesso!' });
@@ -65,19 +65,19 @@ exports.adicionarCliente = async (req, res) => {
 };
  
 exports.atualizarCliente = async (req, res) => {
-    const { CPF } = req.params;
-    const { IDADE, telefone, NOME, email, senha } = req.body;
+    const { cpf } = req.params;
+    const { idade, telefone, nome, email, senha } = req.body;
 
     //Validação de dados
-    const { error } = clienteSchema.validate({ CPF, IDADE, telefone, NOME, email, senha });
+    const { error } = clienteSchema.validate({ cpf, idade, telefone, nome, email, senha });
     if (error) {
         return res.status(400).json({ error: error.details[0].message});
     }
 
     try {
 
-        const clienteAtualizado = { IDADE, telefone, NOME, email, senha };
-        await db.query('UPDATE cliente SET ? WHERE CPF = ?', [clienteAtualizado, CPF]);
+        const clienteAtualizado = { idade, telefone, nome, email, senha };
+        await db.query('UPDATE cliente SET ? WHERE cpf = ?', [clienteAtualizado, cpf]);
 
         res.json({ message: 'Cliente atualizado com sucesso' });
     } catch (err) {
@@ -87,13 +87,13 @@ exports.atualizarCliente = async (req, res) => {
 };
  
 exports.deletarCliente = async (req, res) => {
-    const [ CPF ] = req.params;
+    const  { cpf }  = req.params;
     try {
-        const [result] = await db.query('SELECT * FROM cliente WHERE CPF = ?', [CPF]);
+        const [result] = await db.query('SELECT * FROM cliente WHERE cpf = ?', [cpf]);
         if (result.length === 0) {
             return res.status(404).json({error: 'Cliente não encontrado'});
         }
-        await db.query('DELETE FROM cliente WHERE CPF = ?', [CPF]);
+        await db.query('DELETE FROM cliente WHERE CPF = ?', [cpf]);
         res.json({ message: 'cliente deletado com sucesso'});
     } catch (err) {
         console.error('Erro ao deletar cliente:', err);

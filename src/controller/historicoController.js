@@ -6,7 +6,7 @@ const historicoSchema = Joi.object({
     ID_CONSULTA: Joi.string().required(),
     formadepag: Joi.string().required(),
     dataHistorico: Joi.string().required(),
-    CPF: Joi.string().length(11).required(),
+    cpf: Joi.string().length(11).required(),
 })
 
 //Listar Histórico geral (teste)
@@ -26,9 +26,9 @@ exports.listarHistorico = async (req, res) => {
 
 //Listar o histórico por CPF
 exports.listarHistoricoCpf = async (req, res) => {
-    const { CPF } = req.params;
+    const { cpf } = req.params;
     try{
-        const[result] = await db.query('SELECT * FROM historico WHERE CPF = ?', [CPF]);
+        const[result] = await db.query('SELECT * FROM historico WHERE CPF = ?', [cpf]);
 
         if (result.length === 0) {
             return res.status(404).json({ error: 'histórico não encontrado '});
