@@ -2,18 +2,18 @@ const express = require('express');
 const router = express.Router();
 const historicoController  = require('../controller/historicoController');
 
-router.get('historico', historicoController.listarHistorico);
+router.get('/historico', historicoController.listarHistorico);
 
-router.get('historico/:cpf', historicoController.listarHistoricoCpf);
+router.get('/historico/:cpf', historicoController.listarHistoricoCpf);
 
-router.get('historico/:IdConsulta', historicoController.listarHistoricoIdConsulta);
+router.get('/historico/consulta/:idConsulta', historicoController.listarHistoricoIdConsulta);
 
-router.get('historico/:historicoData', historicoController.listarHistoricoData);
+router.get('/historico/data/:dataHistorico', historicoController.listarHistoricoData);
 
-router.post('historico', historicoController.adicionarHistorico);
+router.post('/historico', historicoController.adicionarHistorico);
 
-router.delete('historico/:idHistorico', historicoController.deletarHistorico);
+router.put('/historico/:idHistorico', historicoController.atualizarHistorico);
 
-router.put('historico/:idHistorico', historicoController.atualizarHistorico);
+router.delete('/historico/:idHistorico', historicoController.deletarHistorico);
 
 module.exports = router;

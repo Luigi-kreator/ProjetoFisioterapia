@@ -3,11 +3,11 @@ const Joi = require('joi');
 
 const historicoSchema = Joi.object({
     idHistorico: Joi.string().required(),
-    ID_CONSULTA: Joi.string().required(),
+    id_Consulta: Joi.string().required(),
     formadepag: Joi.string().required(),
     dataHistorico: Joi.string().required(),
     cpf: Joi.string().length(11).required(),
-})
+});
 
 //Listar Histórico geral (teste)
 exports.listarHistorico = async (req, res) => {
@@ -17,7 +17,7 @@ exports.listarHistorico = async (req, res) => {
         if (result.length === 0) {
             return res.status(404).json({ error: 'histórico não encontrado '});
         }
-        res.json(result[0]);
+        res.json(result);
     } catch (err) {
         console.error('Erro ao buscar histórico:', err);
         res.status(500).json({ error: 'Erro interno do servidor' });
@@ -33,7 +33,7 @@ exports.listarHistoricoCpf = async (req, res) => {
         if (result.length === 0) {
             return res.status(404).json({ error: 'histórico não encontrado '});
         }
-        res.json(result[0]);
+        res.json(result);
     } catch (err) {
         console.error('Erro ao buscar histórico:', err);
         res.status(500).json({ error: 'Erro interno do servidor' });
@@ -42,15 +42,15 @@ exports.listarHistoricoCpf = async (req, res) => {
 
 //Listar histórico por ID da consulta
 exports.listarHistoricoIdConsulta = async (req, res) => {
-    const { ID_CONSULTA } = req.params;
+    const { idConsulta } = req.params;
 
-    try {
-        const [result] = await db.query('SELECT * FROM historico WHERE ID_CONSULTA = ?', [ID_CONSULTA]);
+    try { 
+        const [result] = await db.query('SELECT * FROM historico WHERE ID_CONSULTA = ?', [idConsulta]);
 
         if (result.length === 0) {
             return res.status(404).json({ error: 'consulta não encontrada '});
         }
-        res.json(result[0]);
+        res.json(result);
     } catch (err) {
         console.error('Erro ao buscar consulta:', err);
         res.status(500).json({ error: 'Erro interno do servidor' });
@@ -66,7 +66,7 @@ exports.listarHistoricoData = async (req, res) => {
         if (result.length === 0) {
             return res.status(404).json({ error: 'histórico não encontrado'});
         }
-        res.json(result[0]);
+        res.json(result);
     } catch (err) {
         console.error('Erro ao buscar histórico:', err);
         res.status(500).json({ error: 'Erro interno do servidor' });
@@ -75,15 +75,15 @@ exports.listarHistoricoData = async (req, res) => {
 
 //Adicionar um novo histórico
 exports.adicionarHistorico = async (req, res) => {
-    const { idHistorico, ID_CONSULTA, formadepag, dataHistorico, CPF } = req.body;
+    const { idHistorico, id_Consulta, formadepag, dataHistorico, cpf } = req.body;
 
-    const { error } = historicoSchema.validate({ idHistorico, ID_CONSULTA, formadepag, dataHistorico, CPF });
+    const { error } = historicoSchema.validate({ idHistorico, id_Consulta, formadepag, dataHistorico, cpf });
 
     if (error) {
         return res.status(400).json({ error: error.details[0].message });
     }
 
-    const novoHistorico = { idHistorico, ID_CONSULTA, formadepag, dataHistorico, CPF };
+    const novoHistorico = { idHistorico, id_Consulta, formadepag, dataHistorico, cpf };
 
     try {
         await db.query('INSERT INTO historico SET ?', novoHistorico);
@@ -91,37 +91,28 @@ exports.adicionarHistorico = async (req, res) => {
 
     } catch (err) {
         console.error('Erro ao adicionar histórico:', err);
-        res.status(500).json({ error: 'Erro ao adicionar produto' });
-    }
-};
-
-//Deletar um histórico
-exports.deletarHistorico = async (req, res) => {
-    const { idHistorico } = req.params;
-
-    try {
-        await db.query('DELETE FROM historico WHERE idHistorico = ?', [idHistorico]);
-        res.json({ message: 'histórico deletado com sucesso' });
-    } catch (err) {
-        console.error('Erro ao deletar histórico:', err);
-        res.status(500).json({ error: 'Erro ao deletar histórico' });
+        res.status(500).json({ error: 'Erro ao adicionar Histórico' });
     }
 };
 
 //Atualizar um histórico
 exports.atualizarHistorico = async (req, res) => {
-    const { idHistorico, ID_CONSULTA, formadepag, dataHistorico, CPF } = req.body;
-
+    const { idHistorico } = req.params;
+    const { id_Consulta, formadepag, dataHistorico, cpf } = req.body;
 
     //Validação com Joi
-    const {error }  = historicoSchema.validate({ idHistorico, ID_CONSULTA, formadepag, dataHistorico, CPF });
+    const { error }  = historicoSchema.validate({ idHistorico, id_Consulta, formadepag, dataHistorico, cpf });
 
     if (error) {
         return res.status(400).json({ error: error.details[0].message });
     }
-    const historicoAtualizado = { idHistorico, ID_CONSULTA, formadepag, dataHistorico, CPF };
+    const historicoAtualizado = { idHistorico, id_Consulta, formadepag, dataHistorico, cpf };
 
     try {
+        const [result] = await db.query('SELECT * FROM historico WHERE idHistorico = ?', [idHistorico]);
+        if (result.length === 0) {
+            return res.status(404).json({error: 'Histórico não encontrado'});
+        }
         await db.query('UPDATE historico SET ? WHERE idHistorico = ?', [historicoAtualizado, idHistorico]);
         res.json({ message: 'Historico atualizado com sucesso' });
     } catch (err) {
@@ -131,3 +122,19 @@ exports.atualizarHistorico = async (req, res) => {
 
 };
    
+//Deletar um histórico
+exports.deletarHistorico = async (req, res) => {
+    const { idHistorico } = req.params;
+
+    try {
+        const [result] = await db.query('SELECT * FROM historico WHERE idHistorico = ?', [idHistorico]);
+        if (result.length === 0) {
+            return res.status(404).json({error: 'Histórico não encontrado'});
+        }
+        await db.query('DELETE FROM historico WHERE idHistorico = ?', [idHistorico]);
+        res.json({ message: 'histórico deletado com sucesso' });
+    } catch (err) {
+        console.error('Erro ao deletar histórico:', err);
+        res.status(500).json({ error: 'Erro ao deletar histórico' });
+    }
+};

@@ -26,7 +26,7 @@ exports.listarRegistroCpf = async (req, res) => {
 exports.listarRegistrodata = async (req, res) => {
     const { data } = req.params;
     try {
-        const [result] = await db.query('SELECT * FROM registro WHERE cpf = ?', [data]);
+        const [result] = await db.query('SELECT * FROM registro WHERE dataRegistro = ?', [data]);
         if (result.length === 0) {
             return  res.status(404).json({ error: 'Data do Registro de agenda não encontrado' });
         }

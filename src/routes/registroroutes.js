@@ -5,7 +5,7 @@ const registroController = require('../controller/registroController');
 //Rota para listar um registro de agenda pelo CPF do paciente
 router.get('/registro/:cpf', registroController.listarRegistroCpf);
 //Rota para listar um registro de agenda pelo CPF
-router.get('/registro/:data', registroController.listarRegistrodata);
+router.get('/registro/data/:data', registroController.listarRegistrodata);
 //Rota para listar um registro de agenda pela DATA
 router.post('/registroadd/:id_agendamento', registroController.adicionarRegistro);
 //Rota para atualizar um registro de agenda
