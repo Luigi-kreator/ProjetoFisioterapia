@@ -16,7 +16,7 @@ exports.listarRegistroCpf = async (req, res) => {
         if (result.length === 0) {
             return  res.status(404).json({ error: 'Registro de agenda não encontrado' });
         }
-        res.json(result[0]);
+        res.json(result);
     } catch (err) {
         console.error('Erro ao buscar registro de agenda:', err);
         res.status(500).json({ error: 'Erro interno do servidor' });
@@ -64,7 +64,7 @@ exports.atualizarRegistro = async (req, res) => {
     const { id_agendamento, statusRegistro, dataRegistro, id_consulta, cpf } = req.body;
 
     //Validação de dados
-    const { error } = clienteSchema.validate({  id_agendamento, statusRegistro, dataRegistro, id_consulta, cpf });
+    const { error } = registroSchema.validate({  id_agendamento, statusRegistro, dataRegistro, id_consulta, cpf });
     if (error) {
         return res.status(400).json({ error: error.details[0].message});
     }
